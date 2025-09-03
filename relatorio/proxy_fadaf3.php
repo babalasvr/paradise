@@ -134,9 +134,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $response = curl_exec($ch); $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); $curl_error = curl_error($ch);
     curl_close($ch);
 
-    if ($curl_error) { http_response_code(500); echo json_encode(['error' => 'cURL Error: ' . $curl_error]); exit; }
+    // Log de debug - salvar no arquivo de log
+        $logData = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'payload_sent' => $payload,
+            'http_code' => $httpCode,
+            'api_response' => $response,
+            'curl_error' => $error
+        ];
+        file_put_contents('debug_payment.log', json_encode($logData, JSON_PRETTY_PRINT) . "\n\n", FILE_APPEND);
+
+    if ($error) { http_response_code(500); echo json_encode(['error' => 'cURL Error: ' . $error]); exit; }
     
-    http_response_code($http_code);
+    http_response_code($httpCode);
     echo $response;
     exit;
 }
