@@ -46,6 +46,39 @@ if (isset($_GET['action']) && $_GET['action'] === 'check_status') {
     exit;
 }
 
+// Handle geolocation requests
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['action'])) {
+    header('Content-Type: application/json');
+    
+    // Fetch location data from wtfismyip.com
+    $location_url = 'https://wtfismyip.com/json';
+    $ch_location = curl_init($location_url);
+    curl_setopt_array($ch_location, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_HTTPHEADER => ['Accept: application/json'],
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    ]);
+    
+    $response_location = curl_exec($ch_location);
+    $http_code_location = curl_getinfo($ch_location, CURLINFO_HTTP_CODE);
+    curl_close($ch_location);
+    
+    if ($http_code_location >= 200 && $http_code_location < 300) {
+        echo $response_location;
+    } else {
+        // Fallback data for São Paulo
+        echo json_encode([
+            'YourFuckingLocation' => 'São Paulo, SP',
+            'YourFuckingIPAddress' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+            'YourFuckingISP' => 'Local ISP',
+            'YourFuckingTorExit' => false,
+            'YourFuckingCountryCode' => 'BR'
+        ]);
+    }
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
     $api_url = 'https://api.paradisepagbr.com/api/public/v1/transactions?api_token=' . $API_TOKEN;
@@ -113,79 +146,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $cart_items = [[ "product_hash" => $PRODUCT_HASH, "title" => $PRODUCT_TITLE, "price" => $BASE_AMOUNT, "quantity" => 1, "operation_type" => 1, "tangible" => $IS_DROPSHIPPING ]];
 
-    // Limpar dados do customer para garantir formato correto
-    $clean_customer = [
-        "name" => $customer_data['name'] ?? 'Cliente',
-        "email" => $customer_data['email'] ?? 'cliente@email.com',
-        "phone_number" => $customer_data['phone_number'] ?? '11999999999',
-        "document" => $customer_data['document'] ?? '11111111111'
-    ];
-    
-    // Adicionar endereço apenas se não for produto digital
-    if ($IS_DROPSHIPPING) {
-        $clean_customer['street_name'] = $customer_data['street_name'] ?? 'Rua Principal';
-        $clean_customer['number'] = $customer_data['number'] ?? '123';
-        $clean_customer['complement'] = $customer_data['complement'] ?? '';
-        $clean_customer['neighborhood'] = $customer_data['neighborhood'] ?? 'Centro';
-        $clean_customer['city'] = $customer_data['city'] ?? 'São Paulo';
-        $clean_customer['state'] = $customer_data['state'] ?? 'SP';
-        $clean_customer['zip_code'] = $customer_data['zip_code'] ?? '01234567';
-    }
-
     $payload = [
-        "amount" => (int)$BASE_AMOUNT,
+        "amount" => round($BASE_AMOUNT),
         "offer_hash" => $OFFER_HASH,
         "payment_method" => "pix",
-        "customer" => $clean_customer,
+        "customer" => $customer_data,
         "cart" => $cart_items,
-        "installments" => 1
+        "installments" => 1,
+        "tracking" => $utms
     ];
-    
-    // Adicionar tracking apenas se não estiver vazio
-    if (!empty($utms) && is_array($utms)) {
-        $payload["tracking"] = $utms;
-    }
 
     if ($PIX_EXPIRATION_MINUTES > 0) {
         $payload["pix_expires_in"] = $PIX_EXPIRATION_MINUTES * 60;
     }
 
     $ch = curl_init($api_url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Accept: application/json']);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-    curl_setopt($ch, CURLOPT_HEADER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_VERBOSE, false);
-    
-    $response = curl_exec($ch); 
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); 
-    $curl_error = curl_error($ch);
-    $curl_info = curl_getinfo($ch);
+    $response = curl_exec($ch); $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); $curl_error = curl_error($ch);
     curl_close($ch);
-
-    // Log de debug - salvar no arquivo de log
-        $logData = [
-            'timestamp' => date('Y-m-d H:i:s'),
-            'api_url' => $api_url,
-            'payload_sent' => $payload,
-            'http_code' => $http_code,
-            'api_response' => $response,
-            'curl_error' => $curl_error,
-            'curl_info' => [
-                'url' => $curl_info['url'] ?? null,
-                'content_type' => $curl_info['content_type'] ?? null,
-                'http_code' => $curl_info['http_code'] ?? null,
-                'total_time' => $curl_info['total_time'] ?? null,
-                'connect_time' => $curl_info['connect_time'] ?? null,
-                'ssl_verify_result' => $curl_info['ssl_verify_result'] ?? null
-            ]
-        ];
-        file_put_contents('debug_payment.log', json_encode($logData, JSON_PRETTY_PRINT) . "\n\n", FILE_APPEND);
 
     if ($curl_error) { http_response_code(500); echo json_encode(['error' => 'cURL Error: ' . $curl_error]); exit; }
     
