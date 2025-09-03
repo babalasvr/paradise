@@ -128,25 +128,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $ch = curl_init($api_url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Accept: application/json']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Accept: application/json', 'Authorization: Bearer ' . $API_TOKEN]);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-    $response = curl_exec($ch); $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); $curl_error = curl_error($ch);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_VERBOSE, false);
+    
+    $response = curl_exec($ch); 
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); 
+    $curl_error = curl_error($ch);
+    $curl_info = curl_getinfo($ch);
     curl_close($ch);
 
     // Log de debug - salvar no arquivo de log
         $logData = [
             'timestamp' => date('Y-m-d H:i:s'),
+            'api_url' => $api_url,
             'payload_sent' => $payload,
-            'http_code' => $httpCode,
+            'http_code' => $http_code,
             'api_response' => $response,
-            'curl_error' => $error
+            'curl_error' => $curl_error,
+            'curl_info' => [
+                'url' => $curl_info['url'] ?? null,
+                'content_type' => $curl_info['content_type'] ?? null,
+                'http_code' => $curl_info['http_code'] ?? null,
+                'total_time' => $curl_info['total_time'] ?? null,
+                'connect_time' => $curl_info['connect_time'] ?? null,
+                'ssl_verify_result' => $curl_info['ssl_verify_result'] ?? null
+            ]
         ];
         file_put_contents('debug_payment.log', json_encode($logData, JSON_PRETTY_PRINT) . "\n\n", FILE_APPEND);
 
-    if ($error) { http_response_code(500); echo json_encode(['error' => 'cURL Error: ' . $error]); exit; }
+    if ($curl_error) { http_response_code(500); echo json_encode(['error' => 'cURL Error: ' . $curl_error]); exit; }
     
-    http_response_code($httpCode);
+    http_response_code($http_code);
     echo $response;
     exit;
 }
