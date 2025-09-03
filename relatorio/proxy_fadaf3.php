@@ -113,15 +113,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $cart_items = [[ "product_hash" => $PRODUCT_HASH, "title" => $PRODUCT_TITLE, "price" => $BASE_AMOUNT, "quantity" => 1, "operation_type" => 1, "tangible" => $IS_DROPSHIPPING ]];
 
+    // Limpar dados do customer para garantir formato correto
+    $clean_customer = [
+        "name" => $customer_data['name'] ?? 'Cliente',
+        "email" => $customer_data['email'] ?? 'cliente@email.com',
+        "phone_number" => $customer_data['phone_number'] ?? '11999999999',
+        "document" => $customer_data['document'] ?? '11111111111'
+    ];
+    
+    // Adicionar endereço apenas se não for produto digital
+    if ($IS_DROPSHIPPING) {
+        $clean_customer['street_name'] = $customer_data['street_name'] ?? 'Rua Principal';
+        $clean_customer['number'] = $customer_data['number'] ?? '123';
+        $clean_customer['complement'] = $customer_data['complement'] ?? '';
+        $clean_customer['neighborhood'] = $customer_data['neighborhood'] ?? 'Centro';
+        $clean_customer['city'] = $customer_data['city'] ?? 'São Paulo';
+        $clean_customer['state'] = $customer_data['state'] ?? 'SP';
+        $clean_customer['zip_code'] = $customer_data['zip_code'] ?? '01234567';
+    }
+
     $payload = [
-        "amount" => round($BASE_AMOUNT),
+        "amount" => (int)$BASE_AMOUNT,
         "offer_hash" => $OFFER_HASH,
         "payment_method" => "pix",
-        "customer" => $customer_data,
+        "customer" => $clean_customer,
         "cart" => $cart_items,
-        "installments" => 1,
-        "tracking" => $utms
+        "installments" => 1
     ];
+    
+    // Adicionar tracking apenas se não estiver vazio
+    if (!empty($utms) && is_array($utms)) {
+        $payload["tracking"] = $utms;
+    }
 
     if ($PIX_EXPIRATION_MINUTES > 0) {
         $payload["pix_expires_in"] = $PIX_EXPIRATION_MINUTES * 60;
