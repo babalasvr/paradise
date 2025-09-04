@@ -83,10 +83,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
     $api_url = 'https://api.paradisepagbr.com/api/public/v1/transactions?api_token=' . $API_TOKEN;
     $raw_input = file_get_contents('php://input');
+    
+    // Debug: Log raw input
+    error_log('Raw input received: ' . $raw_input);
+    
     $data = json_decode($raw_input, true);
+    
+    // Debug: Log decoded data
+    error_log('Decoded data: ' . print_r($data, true));
     
     // Check if JSON decoding failed
     if (json_last_error() !== JSON_ERROR_NONE) {
+        error_log('JSON decode error: ' . json_last_error_msg());
         http_response_code(400);
         echo json_encode(['error' => 'Invalid JSON: ' . json_last_error_msg()]);
         exit;

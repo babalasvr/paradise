@@ -1598,6 +1598,11 @@
             utms: utms
         };
 
+        // Debug: Log payload before sending
+        console.log('Payload being sent:', JSON.stringify(payload, null, 2));
+        console.log('Customer data:', customerData);
+        console.log('UTMs:', utms);
+
         try {
             const response = await fetch(PROXY_URL, {
                 method: 'POST',
