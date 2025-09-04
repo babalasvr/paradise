@@ -85,6 +85,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     $customer_data = $data['customer'] ?? [];
     $utms = $data['utms'] ?? [];
+    
+    // Initialize variables to avoid PHP notices
+    $cpf = null;
 
     // --- FAKE DATA GENERATION FOR DISABLED FIELDS / DIRECT PIX V3.2 ---
     // This logic ensures user-submitted data is used, and only fills in blanks if fields are disabled or for direct PIX.
@@ -164,10 +167,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Accept: application/json']);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-    $response = curl_exec($ch); $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); $curl_error = curl_error($ch);
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_error = curl_error($ch);
     curl_close($ch);
 
-    if ($curl_error) { http_response_code(500); echo json_encode(['error' => 'cURL Error: ' . $curl_error]); exit; }
+    // Initialize variables to avoid PHP notices
+    $httpCode = $http_code;
+    $error = $curl_error;
+    
+    if ($curl_error) {
+        http_response_code(500);
+        echo json_encode(['error' => 'cURL Error: ' . $curl_error]);
+        exit;
+    }
     
     http_response_code($http_code);
     echo $response;
