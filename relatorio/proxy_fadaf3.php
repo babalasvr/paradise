@@ -46,6 +46,39 @@ if (isset($_GET['action']) && $_GET['action'] === 'check_status') {
     exit;
 }
 
+// Handle geolocation requests
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['action'])) {
+    header('Content-Type: application/json');
+    
+    // Fetch location data from wtfismyip.com
+    $location_url = 'https://wtfismyip.com/json';
+    $ch_location = curl_init($location_url);
+    curl_setopt_array($ch_location, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_HTTPHEADER => ['Accept: application/json'],
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    ]);
+    
+    $response_location = curl_exec($ch_location);
+    $http_code_location = curl_getinfo($ch_location, CURLINFO_HTTP_CODE);
+    curl_close($ch_location);
+    
+    if ($http_code_location >= 200 && $http_code_location < 300) {
+        echo $response_location;
+    } else {
+        // Fallback data for São Paulo
+        echo json_encode([
+            'YourFuckingLocation' => 'São Paulo, SP',
+            'YourFuckingIPAddress' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+            'YourFuckingISP' => 'Local ISP',
+            'YourFuckingTorExit' => false,
+            'YourFuckingCountryCode' => 'BR'
+        ]);
+    }
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
     $api_url = 'https://api.paradisepagbr.com/api/public/v1/transactions?api_token=' . $API_TOKEN;
