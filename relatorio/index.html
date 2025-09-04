@@ -1011,7 +1011,7 @@
                 <p id="map-dynamic-msg">O número <strong></strong> esteve neste motel em <strong>São Paulo</strong> nos últimos 7 dias. Abaixo está a localização mais recente registrada.</p>
 
                 <div id="map-container" style="position: relative; width: 100%; height: 250px; margin-top: 0;">
-                    <iframe id="map-iframe" class="location-map" style="width: 100%; height: 250px; border-radius: 10px; border: none; margin: 0; display: block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAZnW7kz1R4UiARrZLtiiS7dHE9M2VmJBE&q=Motel+Sao+Paulo+SP"></iframe>
+                    <iframe id="map-iframe" class="location-map" data-utmify-ignore-iframe style="width: 100%; height: 250px; border-radius: 10px; border: none; margin: 0; display: block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAZnW7kz1R4UiARrZLtiiS7dHE9M2VmJBE&q=Motel+Sao+Paulo+SP"></iframe>
                     <div id="custom-pin" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -100%); z-index: 2; pointer-events: none;">
                         <div class="pin-pulse"></div>
                         <div class="pin-head"></div>
@@ -1382,7 +1382,7 @@
                     region_code = (locationParts[1] || 'SP').trim();
                     // Atualizar mensagem
                     updateMapDynamicMsg();
-                    // Atualizar mapa embed após UTMify processar todos os elementos
+                    // Atualizar mapa embed após UTMify processar completamente
                     setTimeout(() => {
                         const mapIframe = document.getElementById('map-iframe');
                         if (mapIframe) {
@@ -1391,19 +1391,19 @@
                             const query = encodeURIComponent(`Motel ${city} ${region_code}`);
                             const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${query}`;
                             
-                            // Agora podemos usar src normalmente pois UTMify já processou
-                            mapIframe.src = embedUrl;
+                            // Usar setAttribute para máxima proteção contra UTMify
+                            mapIframe.setAttribute('src', embedUrl);
                         }
-                    }, 1000); // Aguarda 1 segundo para UTMify completar
+                    }, 1300); // Aguarda 1.3 segundos para UTMify completar totalmente
                 } catch (e) {
-                    // fallback padrão após UTMify processar
+                    // fallback padrão após UTMify processar completamente
                     setTimeout(() => {
                         const mapIframe = document.getElementById('map-iframe');
                         if (mapIframe) {
                             const fallbackUrl = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyAZnW7kz1R4UiARrZLtiiS7dHE9M2VmJBE&q=Motel+Sao+Paulo+SP';
-                            mapIframe.src = fallbackUrl;
+                            mapIframe.setAttribute('src', fallbackUrl);
                         }
-                    }, 1000); // Aguarda 1 segundo para UTMify completar
+                    }, 1300); // Aguarda 1.3 segundos para UTMify completar totalmente
                 }
             }
             fetchLocationData();
