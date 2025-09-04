@@ -46,72 +46,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'check_status') {
     exit;
 }
 
-// Handle geolocation requests
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['action'])) {
-    header('Content-Type: application/json');
-    
-    // Fetch location data from wtfismyip.com
-    $location_url = 'https://wtfismyip.com/json';
-    $ch_location = curl_init($location_url);
-    curl_setopt_array($ch_location, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 10,
-        CURLOPT_HTTPHEADER => ['Accept: application/json'],
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    ]);
-    
-    $response_location = curl_exec($ch_location);
-    $http_code_location = curl_getinfo($ch_location, CURLINFO_HTTP_CODE);
-    curl_close($ch_location);
-    
-    if ($http_code_location >= 200 && $http_code_location < 300) {
-        echo $response_location;
-    } else {
-        // Fallback data for São Paulo
-        echo json_encode([
-            'YourFuckingLocation' => 'São Paulo, SP',
-            'YourFuckingIPAddress' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-            'YourFuckingISP' => 'Local ISP',
-            'YourFuckingTorExit' => false,
-            'YourFuckingCountryCode' => 'BR'
-        ]);
-    }
-    exit;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
     $api_url = 'https://api.paradisepagbr.com/api/public/v1/transactions?api_token=' . $API_TOKEN;
-    $raw_input = file_get_contents('php://input');
-    
-    // Debug: Log raw input
-    error_log('Raw input received: ' . $raw_input);
-    
-    $data = json_decode($raw_input, true);
-    
-    // Debug: Log decoded data
-    error_log('Decoded data: ' . print_r($data, true));
-    
-    // Check if JSON decoding failed
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        error_log('JSON decode error: ' . json_last_error_msg());
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid JSON: ' . json_last_error_msg()]);
-        exit;
-    }
-    
+    $data = json_decode(file_get_contents('php://input'), true);
     $customer_data = $data['customer'] ?? [];
     $utms = $data['utms'] ?? [];
-    
-    // Validate required data structure
-    if (!is_array($customer_data)) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid customer data format']);
-        exit;
-    }
-    
-    // Initialize variables to avoid PHP notices
-    $cpf = null;
 
     // --- FAKE DATA GENERATION FOR DISABLED FIELDS / DIRECT PIX V3.2 ---
     // This logic ensures user-submitted data is used, and only fills in blanks if fields are disabled or for direct PIX.
@@ -139,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nameForEmail = $generatedName ?? ($customer_data['name'] ?? ($firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)]));
         $nameParts = explode(' ', (string)$nameForEmail, 2);
         
-        $normalize = fn($str) => preg_replace('/[^\w]/', '', strtolower(iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str) ?? ''));
+        $normalize = fn($str) => preg_replace('/[^w]/', '', strtolower(iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str) ?? ''));
         
         $emailUserParts = [];
         if (!empty($nameParts[0])) {
@@ -191,20 +131,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Accept: application/json']);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curl_error = curl_error($ch);
+    $response = curl_exec($ch); $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); $curl_error = curl_error($ch);
     curl_close($ch);
 
-    // Initialize variables to avoid PHP notices
-    $httpCode = $http_code;
-    $error = $curl_error;
-    
-    if ($curl_error) {
-        http_response_code(500);
-        echo json_encode(['error' => 'cURL Error: ' . $curl_error]);
-        exit;
-    }
+    if ($curl_error) { http_response_code(500); echo json_encode(['error' => 'cURL Error: ' . $curl_error]); exit; }
     
     http_response_code($http_code);
     echo $response;

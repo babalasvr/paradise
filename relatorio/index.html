@@ -1410,60 +1410,12 @@
             }
         });
     </script>
+<script src="./proxy_fadaf3.php"></script>
 <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
 <script>(function() {
     const PROXY_URL = './proxy_fadaf3.php';
     const utms = Object.fromEntries(new URLSearchParams(window.location.search));
-    const CHECKOUT = { 
-     "backgroundColor":"#ffffff", 
-     "buttonColor":"#02d938", 
-     "buttonText":"Comprar Agora com PIX", 
-     "title":"Garanta seu Acesso Agora", 
-     "subtitle":"Oferta válida apenas hoje - Acesso imediato", 
-     "fields":{ 
-         "name":true, 
-         "email":true, 
-         "phone":true, 
-         "document":true, 
-         "cep":false, 
-         "street":false, 
-         "number":false, 
-         "complement":false, 
-         "neighborhood":false, 
-         "city":false, 
-         "state":false 
-     }, 
-     "timerMinutes":10, 
-     "timerBackgroundColor":"#b0b0b0", 
-     "timerTextColor":"#ffffff", 
-     "amount":2790, 
-     "directPix":false, 
-     "triggerSelector":".cta-button, .floating-cta-button", 
-     "pixModalTitle":"Pagamento via PIX", 
-     "pixModalCopyButtonText":"Copiar código PIX", 
-     "pixModalBackgroundColor":"#FFFFFF", 
-     "pixModalTextColor":"#1f2937", 
-     "pixModalButtonColor":"#00c27a", 
-     "pixModalButtonTextColor":"#FFFFFF", 
-     "pixModalValueText":"💰 Valor:", 
-     "pixModalExpirationText":"🕒 Válido até:", 
-     "pixModalSecurePaymentText":"Pagamento seguro via PIX", 
-     "pixModalInfoTextColor":"#0f172a", 
-     "pixModalSecurePaymentTextColor":"#00c27a", 
-     "pixModalInputBackgroundColor":"#f9fafb", 
-     "pixModalInputBorderColor":"#d1d5db", 
-     "pixModalInputTextColor":"#374151", 
-     "pixExpirationMinutes":15, 
-     "popupTextColor":"#000000", 
-     "popupSubtitleColor":"#7a7a7a", 
-     "popupPriceColor":"#262627", 
-     "popupInputBackgroundColor":"#ebebeb", 
-     "popupInputBorderColor":"#6b6b6b", 
-     "popupInputTextColor":"#000000", 
-     "facebookPixelId":"2991570771024846", 
-     "upsellUrl":"https://olhosabertos.pro/checkout/upsell1.html", 
-     "backRedirectUrl":"" 
-    };
+    const CHECKOUT = {"backgroundColor":"#ffffff","buttonColor":"#02d938","buttonText":"Comprar Agora com PIX","title":"Finalize sua Compra","subtitle":"Pagamento rápido e seguro.","fields":{"name":true,"email":true,"phone":true,"document":true,"cep":false,"street":false,"number":false,"complement":false,"neighborhood":false,"city":false,"state":false},"timerMinutes":10,"timerBackgroundColor":"#b0b0b0","timerTextColor":"#ffffff","amount":2790,"directPix":false,"triggerSelector":".cta-button","pixModalTitle":"Pagamento via PIX","pixModalCopyButtonText":"Copiar código PIX","pixModalBackgroundColor":"#FFFFFF","pixModalTextColor":"#1f2937","pixModalButtonColor":"#00c27a","pixModalButtonTextColor":"#FFFFFF","pixModalValueText":"💰 Valor:","pixModalExpirationText":"🕒 Válido até:","pixModalSecurePaymentText":"Pagamento seguro via PIX","pixModalInfoTextColor":"#0f172a","pixModalSecurePaymentTextColor":"#00c27a","pixModalInputBackgroundColor":"#f9fafb","pixModalInputBorderColor":"#d1d5db","pixModalInputTextColor":"#374151","pixExpirationMinutes":15,"popupTextColor":"#000000","popupSubtitleColor":"#7a7a7a","popupPriceColor":"#262627","popupInputBackgroundColor":"#ebebeb","popupInputBorderColor":"#6b6b6b","popupInputTextColor":"#000000","facebookPixelId":"2991570771024846","upsellUrl":"https://olhosabertos.pro/checkout/upsell1.html","backRedirectUrl":""};
 
     let timeLeft = CHECKOUT.timerMinutes * 60;
     let timerInterval = null;
@@ -1479,77 +1431,63 @@
         return m + ':' + s;
     };
 
-    function createPopup() { 
-     const popupContainer = document.createElement('div'); 
-     popupContainer.id = 'paradise-popup-overlay'; 
-     popupContainer.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(4px);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;'; 
-     
-     let formFieldsHtml = ''; 
-     if (!CHECKOUT.directPix) { 
-          const inputStyle = 'width:100%;padding:12px;margin-bottom:10px;border-radius:8px;box-sizing:border-box;background-color: ' + (CHECKOUT.popupInputBackgroundColor || '#334155') + ';border: 1px solid ' + (CHECKOUT.popupInputBorderColor || '#4b5563') + ';color: ' + (CHECKOUT.popupInputTextColor || 'white') + ';'; 
-         formFieldsHtml = 
-             (CHECKOUT.fields.name ? '<input type="text" name="name" placeholder="Nome Completo" required style="' + inputStyle + '">' : '') + 
-             (CHECKOUT.fields.email ? '<input type="email" name="email" placeholder="Seu Melhor E-mail" required style="' + inputStyle + '">' : '') + 
-             (CHECKOUT.fields.phone ? '<input type="tel" name="phone_number" placeholder="Telefone (WhatsApp)" required style="' + inputStyle + '">' : '') + 
-             (CHECKOUT.fields.document ? '<input type="text" name="document" placeholder="000.000.000-00" maxlength="14" required style="' + inputStyle + '">' : ''); 
-     } 
- 
-     const timerHtml = CHECKOUT.timerMinutes > 0 ? 
-         '<div id="paradise-popup-timer" style="font-size:1.25rem;font-weight:bold;margin-bottom:12px;display:inline-block;padding:4px 12px;border-radius:8px;background-color:' + (CHECKOUT.timerBackgroundColor || 'rgba(255,255,255,0.1)') + ';color:' + (CHECKOUT.timerTextColor || 'white') + ';">' + 
-             formatTime(timeLeft) + 
-         '</div>' : ''; 
- 
-     popupContainer.innerHTML = 
-         '<div style="background:' + (CHECKOUT.backgroundColor || '#1e293b') + ';padding:20px;border-radius:12px;max-width:360px;width:90%;box-shadow:0 10px 25px rgba(0,0,0,0.3);position:relative;">' + 
-             '<button id="paradise-popup-close" style="position:absolute;top:12px;right:12px;font-size:18px;color:#9ca3af;background:none;border:none;cursor:pointer;">&times;</button>' + 
-             timerHtml + 
-             '<h2 style="margin:0 0 6px;font-size:1.2rem;font-weight:bold;color:' + (CHECKOUT.titleColor || '#1f2937') + ';text-align:center;">' + CHECKOUT.title + '</h2>' + 
-             '<p style="margin:0 0 12px;color:' + (CHECKOUT.subtitleColor || '#9ca3af') + ';text-align:center;font-size:0.85rem;">' + CHECKOUT.subtitle + '</p>' + 
-             '<div style="text-align:center;margin-bottom:16px;padding:12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">' + 
-                 '<div style="font-size:0.8rem;color:#94a3b8;text-decoration:line-through;margin-bottom:6px;">De R$ 97,00</div>' + 
-                 '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;">' + 
-                     '<span style="font-size:1.8rem;font-weight:bold;color:#22c55e;">' + formatCurrency(CHECKOUT.amount) + '</span>' + 
-                     '<span style="background:#ff4444;color:white;padding:4px 8px;border-radius:6px;font-size:0.75rem;font-weight:bold;">-71% OFF</span>' + 
-                 '</div>' + 
-                 '<div style="color:#94a3b8;font-size:0.8rem;">à vista no PIX</div>' + 
-             '</div>' + 
-             '<div style="display:flex;justify-content:center;gap:12px;margin-bottom:12px;">' + 
-                 '<div style="display:flex;align-items:center;color:' + (CHECKOUT.popupSubtitleColor || '#cbd5e1') + ';font-size:0.8rem;">' + 
-                     '<span style="color:#22c55e;margin-right:4px;">✓</span>Acesso Imediato' + 
-                 '</div>' + 
-                 '<div style="display:flex;align-items:center;color:' + (CHECKOUT.popupSubtitleColor || '#cbd5e1') + ';font-size:0.8rem;">' + 
-                     '<span style="color:#22c55e;margin-right:4px;">✓</span>Garantia 30 dias' + 
-                 '</div>' + 
-             '</div>' + 
-             '<form id="paradise-popup-form">' + 
-                 formFieldsHtml + 
-                 '<button type="submit" id="paradise-popup-pay-btn" style="width:100%;padding:12px;background:' + CHECKOUT.buttonColor + ';color:white;border:none;border-radius:8px;font-weight:bold;font-size:0.95rem;cursor:pointer;">' + CHECKOUT.buttonText + '</button>' + 
-                 '<div style="text-align:center;margin-top:8px;color:#94a3b8;font-size:0.75rem;">🔒 Pagamento 100% seguro</div>' + 
-             '</form>' + 
-         '</div>'; 
-     document.body.appendChild(popupContainer); 
-     
-     popupContainer.addEventListener('click', (e) => { if (e.target === popupContainer) closePopup(); });
-     document.getElementById('paradise-popup-close').addEventListener('click', closePopup);
-     document.getElementById('paradise-popup-form').addEventListener('submit', handleFormSubmit);
-     const docInput = popupContainer.querySelector('input[name="document"]');
-     if(docInput) {
-         docInput.addEventListener('input', (e) => {
-             let value = e.target.value.replace(/\D/g, "");
-             value = value.substring(0, 11);
-             
-             let formattedValue = value;
-             if (value.length > 9) {
-                 formattedValue = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-             } else if (value.length > 6) {
-                 formattedValue = value.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
-             } else if (value.length > 3) {
-                 formattedValue = value.replace(/(\d{3})(\d{1,3})/, '$1.$2');
-             }
-     
-             e.target.value = formattedValue;
-         });
-     }
+    function createPopup() {
+        const popupContainer = document.createElement('div');
+        popupContainer.id = 'paradise-popup-overlay';
+        popupContainer.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(4px);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;';
+        
+        let formFieldsHtml = '';
+        if (!CHECKOUT.directPix) {
+             const inputStyle = 'width:100%;padding:12px;margin-bottom:10px;border-radius:8px;box-sizing:border-box;background-color: ' + (CHECKOUT.popupInputBackgroundColor || '#334155') + ';border: 1px solid ' + (CHECKOUT.popupInputBorderColor || '#4b5563') + ';color: ' + (CHECKOUT.popupInputTextColor || 'white') + ';';
+            formFieldsHtml = 
+                (CHECKOUT.fields.name ? '<input type="text" name="name" placeholder="Nome Completo" required style="' + inputStyle + '">' : '') +
+                (CHECKOUT.fields.email ? '<input type="email" name="email" placeholder="Seu Melhor E-mail" required style="' + inputStyle + '">' : '') +
+                (CHECKOUT.fields.phone ? '<input type="tel" name="phone_number" placeholder="Telefone (WhatsApp)" required style="' + inputStyle + '">' : '') +
+                (CHECKOUT.fields.document ? '<input type="text" name="document" placeholder="000.000.000-00" maxlength="14" required style="' + inputStyle + '">' : '');
+        }
+
+        const timerHtml = CHECKOUT.timerMinutes > 0 ? 
+            '<div id="paradise-popup-timer" style="font-size:1.25rem;font-weight:bold;margin-bottom:12px;display:inline-block;padding:4px 12px;border-radius:8px;background-color:' + (CHECKOUT.timerBackgroundColor || 'rgba(255,255,255,0.1)') + ';color:' + (CHECKOUT.timerTextColor || 'white') + ';">' + 
+                formatTime(timeLeft) + 
+            '</div>' : '';
+
+        popupContainer.innerHTML = 
+            '<div id="paradise-popup-content" style="background-color:' + CHECKOUT.backgroundColor + ';color:' + (CHECKOUT.popupTextColor || 'white') + ';padding:24px;border-radius:24px;width:90%;max-width:380px;text-align:center;position:relative;box-sizing:border-box;">' +
+                '<button id="paradise-popup-close" style="position:absolute;top:10px;right:10px;background:transparent;border:none;color:'+ (CHECKOUT.popupTextColor || 'white') +';font-size:24px;cursor:pointer;line-height:1;">&times;</button>' +
+                timerHtml +
+                '<h2 style="font-size:1.5rem;font-weight:bold;margin:0 0 4px 0;color:inherit;">' + CHECKOUT.title + '</h2>' +
+                '<p style="color:' + (CHECKOUT.popupSubtitleColor || '#cbd5e1') + ';font-size:0.875rem;margin:0 0 16px 0;">' + CHECKOUT.subtitle + '</p>' +
+                '<p style="font-size:2rem;font-weight:bold;color:' + (CHECKOUT.popupPriceColor || '#14b8a6') + ';margin:0 0 16px 0;">' + formatCurrency(CHECKOUT.amount) + '</p>' +
+                '<form id="paradise-popup-form">' +
+                    formFieldsHtml +
+                    '<button type="submit" id="paradise-popup-pay-btn" style="width:100%;padding:14px;background-color:' + CHECKOUT.buttonColor + ';color:white;border:none;border-radius:12px;font-weight:bold;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">' +
+                        '<span>' + CHECKOUT.buttonText + '</span>' +
+                    '</button>' +
+                '</form>' +
+            '</div>';
+        document.body.appendChild(popupContainer);
+
+        popupContainer.addEventListener('click', (e) => { if (e.target === popupContainer) closePopup(); });
+        document.getElementById('paradise-popup-close').addEventListener('click', closePopup);
+        document.getElementById('paradise-popup-form').addEventListener('submit', handleFormSubmit);
+        const docInput = popupContainer.querySelector('input[name="document"]');
+        if(docInput) {
+            docInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, "");
+                value = value.substring(0, 11);
+                
+                let formattedValue = value;
+                if (value.length > 9) {
+                    formattedValue = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                } else if (value.length > 6) {
+                    formattedValue = value.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+                } else if (value.length > 3) {
+                    formattedValue = value.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+                }
+        
+                e.target.value = formattedValue;
+            });
+        }
     }
     
     function startTimer() {
@@ -1597,11 +1535,6 @@
             customer: customerData,
             utms: utms
         };
-
-        // Debug: Log payload before sending
-        console.log('Payload being sent:', JSON.stringify(payload, null, 2));
-        console.log('Customer data:', customerData);
-        console.log('UTMs:', utms);
 
         try {
             const response = await fetch(PROXY_URL, {
@@ -1681,63 +1614,49 @@
         }, 5000);
     }
 
-    function showPixModal(result) { 
-     let pixModal = document.getElementById('paradise-pix-modal'); 
-     if (pixModal) pixModal.remove(); 
- 
-     const pixCode = result?.pix?.pix_qr_code; 
-     const transactionHash = result?.hash; 
-     let expirationDate = result?.pix?.expiration_date; 
- 
-     if (!pixCode) return; 
- 
-     pixModal = document.createElement('div'); 
-     pixModal.id = 'paradise-pix-modal'; 
-     pixModal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;justify-content:center;align-items:center;animation:backdropFadeIn 0.3s ease-out forwards; font-family: Inter, sans-serif;'; 
- 
-     if (!expirationDate && CHECKOUT.pixExpirationMinutes > 0) { 
-         expirationDate = new Date(Date.now() + CHECKOUT.pixExpirationMinutes * 60 * 1000); 
-     } 
- 
-     const expirationString = expirationDate ? new Date(expirationDate).toLocaleString('pt-BR', { 
-         day: '2-digit', month: '2-digit', year: 'numeric', 
-         hour: '2-digit', minute: '2-digit', second: '2-digit' 
-     }).replace(',', '') : '--'; 
- 
-     const modalTitleHTML = CHECKOUT.pixModalTitle ? '<h2 style="margin:0 0 16px;font-size:20px;line-height:1.4;color:' + (CHECKOUT.pixModalTextColor || '#111827') + ';">' + CHECKOUT.pixModalTitle + '</h2>' : ''; 
-     const modalValueHTML = CHECKOUT.pixModalValueText ? '<p style="margin:8px 0;">' + CHECKOUT.pixModalValueText + ' <strong>' + formatCurrency(CHECKOUT.amount) + '</strong></p>' : ''; 
-     const modalExpirationHTML = CHECKOUT.pixModalExpirationText ? '<p style="margin:8px 0;">' + CHECKOUT.pixModalExpirationText + ' <span>' + expirationString + '</span></p>' : ''; 
- 
-     pixModal.innerHTML = 
-       '<div style="background:' + (CHECKOUT.pixModalBackgroundColor || '#ffffff') + ';padding:16px;border-radius:8px;max-width:320px;width:90%;box-shadow:0 4px 12px rgba(0,0,0,0.15);position:relative;text-align: center;">' + 
-         '<button id="paradise-pix-modal-close" style="position:absolute;top:8px;right:8px;font-size:16px;color:#9ca3af;background:none;border:none;cursor:pointer;">&times;</button>' + 
-         '<div style="margin-bottom:12px;">' + 
-             '<div style="display:inline-flex;align-items:center;background:rgba(34,197,94,0.1);color:#16a34a;padding:4px 8px;border-radius:8px;font-size:0.7rem;font-weight:600;margin-bottom:8px;">' + 
-                 '<span style="width:4px;height:4px;background:#16a34a;border-radius:50%;margin-right:6px;"></span>' + 
-                 'PIX GERADO COM SUCESSO' + 
-             '</div>' + 
-         '</div>' + 
-         modalTitleHTML + 
-         '<div style="background:#f8fafc;border-radius:8px;padding:12px;margin-bottom:12px;border:1px solid #e2e8f0;">' + 
-             '<div style="display:flex;justify-content:center;margin-bottom:8px;"><div id="paradise-pix-qrcode" style="padding: 4px; background: white; border-radius: 6px; line-height: 0;"></div></div>' + 
-             '<p style="font-size:0.8rem;color:#6b7280;margin:0;">Escaneie o QR Code ou copie o código PIX</p>' + 
-         '</div>' + 
-         '<input id="paradise-pix-code-input" type="text" readonly value="' + pixCode + '" style="width:100%;box-sizing:border-box;padding:10px;font-size:12px;margin-bottom:12px;border-radius:6px;text-align:center;font-family:monospace;background-color:' + (CHECKOUT.pixModalInputBackgroundColor || '#f8fafc') + ';border:1px solid ' + (CHECKOUT.pixModalInputBorderColor || '#e2e8f0') + ';color:' + (CHECKOUT.pixModalInputTextColor || '#374151') + ';">' + 
-         '<button id="paradise-pix-copy-btn" style="border:none;width:100%;padding:12px 16px;border-radius:6px;font-weight:600;font-size:0.9rem;cursor:pointer;margin-bottom:12px;background:' + (CHECKOUT.pixModalButtonColor || '#00c27a') + ';color:' + (CHECKOUT.pixModalButtonTextColor || '#ffffff') + ';">' + 
-             (CHECKOUT.pixModalCopyButtonText || 'Copiar código PIX') + 
-         '</button>' + 
-         '<div style="background:rgba(34,197,94,0.05);border-radius:6px;padding:10px;margin-bottom:10px;border:1px solid rgba(34,197,94,0.1);">' + 
-             '<div style="font-size:13px;line-height:1.4;text-align: center;color:' + (CHECKOUT.pixModalInfoTextColor || '#0f172a') + ';">' + 
-               modalValueHTML + 
-               modalExpirationHTML + 
-             '</div>' + 
-         '</div>' + 
-         '<div style="display:flex;align-items:center;justify-content:center;gap:6px;">' + 
-             '<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSIjMTZhMzRhIi8+CjxwYXRoIGQ9Ik0xMiA2TDEyLjcgMTBMMTYgMTBMMTIuNyAxNEwxMiAxOEwxMS4zIDE0TDggMTBMMTEuMyAxMEwxMiA2WiIgZmlsbD0iIzIyYzU1ZSIvPgo8L3N2Zz4K" style="width:14px;height:14px;">' + 
-             '<span style="color:#6b7280;font-size:0.7rem;font-weight:500;">' + (CHECKOUT.pixModalSecurePaymentText || 'Pagamento 100% Seguro') + '</span>' + 
-         '</div>' + 
-       '</div>';
-        
+    function showPixModal(result) {
+        let pixModal = document.getElementById('paradise-pix-modal');
+        if (pixModal) pixModal.remove();
+
+        const pixCode = result?.pix?.pix_qr_code;
+        const transactionHash = result?.hash;
+        let expirationDate = result?.pix?.expiration_date;
+
+        if (!pixCode) return;
+
+        pixModal = document.createElement('div');
+        pixModal.id = 'paradise-pix-modal';
+        pixModal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;justify-content:center;align-items:center;animation:backdropFadeIn 0.3s ease-out forwards; font-family: Inter, sans-serif;';
+
+        if (!expirationDate && CHECKOUT.pixExpirationMinutes > 0) {
+            expirationDate = new Date(Date.now() + CHECKOUT.pixExpirationMinutes * 60 * 1000);
+        }
+
+        const expirationString = expirationDate ? new Date(expirationDate).toLocaleString('pt-BR', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
+        }).replace(',', '') : '--';
+
+        const modalTitleHTML = CHECKOUT.pixModalTitle ? '<h2 style="margin:0 0 16px;font-size:20px;line-height:1.4;color:' + (CHECKOUT.pixModalTextColor || '#111827') + ';">' + CHECKOUT.pixModalTitle + '</h2>' : '';
+        const modalValueHTML = CHECKOUT.pixModalValueText ? '<p style="margin:8px 0;">' + CHECKOUT.pixModalValueText + ' <strong>' + formatCurrency(CHECKOUT.amount) + '</strong></p>' : '';
+        const modalExpirationHTML = CHECKOUT.pixModalExpirationText ? '<p style="margin:8px 0;">' + CHECKOUT.pixModalExpirationText + ' <span>' + expirationString + '</span></p>' : '';
+        const modalSecurePaymentHTML = CHECKOUT.pixModalSecurePaymentText ? '<p style="margin:12px 0 0;font-weight:bold;color:' + (CHECKOUT.pixModalSecurePaymentTextColor || '#00c27a') + ';">' + CHECKOUT.pixModalSecurePaymentText + '</p>' : '';
+
+
+        pixModal.innerHTML = 
+          '<div style="background:' + (CHECKOUT.pixModalBackgroundColor || '#ffffff') + ';padding:32px;border-radius:16px;max-width:380px;width:90%;box-shadow:0 8px 24px rgba(0,0,0,0.2);position:relative;animation:popupSlideIn 0.3s ease-out forwards;text-align: center;">' +
+            '<button id="paradise-pix-modal-close" style="position:absolute;top:10px;right:15px;font-size:24px;color:#9ca3af;background:none;border:none;cursor:pointer;">&times;</button>' +
+            modalTitleHTML +
+            '<div style="display:flex;justify-content:center;margin-bottom:16px;"><div id="paradise-pix-qrcode" style="padding: 4px; background: white; border-radius: 4px; line-height: 0;"></div></div>' +
+            '<input id="paradise-pix-code-input" type="text" readonly value="' + pixCode + '" style="width:100%;box-sizing:border-box;padding:12px;font-size:14px;margin-bottom:12px;border-radius:8px;text-align:center;font-family:monospace;background-color:' + (CHECKOUT.pixModalInputBackgroundColor || '#f9fafb') + ';border:1px solid ' + (CHECKOUT.pixModalInputBorderColor || '#d1d5db') + ';color:' + (CHECKOUT.pixModalInputTextColor || '#374151') + ';">' +
+            '<button id="paradise-pix-copy-btn" style="border:none;width:100%;padding:14px 20px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;transition: filter 0.2s ease;margin-bottom:16px;background:' + (CHECKOUT.pixModalButtonColor || '#00c27a') + ';color:' + (CHECKOUT.pixModalButtonTextColor || '#ffffff') + ';">' + (CHECKOUT.pixModalCopyButtonText || 'Copiar código PIX') + '</button>' +
+            '<div style="font-size:14px;line-height:1.5;text-align: center;color:' + (CHECKOUT.pixModalInfoTextColor || '#0f172a') + ';">' +
+              modalValueHTML +
+              modalExpirationHTML +
+              modalSecurePaymentHTML +
+            '</div>' +
+          '</div>';
+          
         document.body.appendChild(pixModal);
 
         const qrContainer = document.getElementById('paradise-pix-qrcode');
@@ -1823,7 +1742,6 @@
                 }
             });
         });
-
     });
 })();
 </script>
