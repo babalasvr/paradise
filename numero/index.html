@@ -212,6 +212,28 @@
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
 
+        .phone-error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background-color: #fdf2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         @keyframes pulse {
             0% {
                 box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
@@ -445,6 +467,7 @@
             <div class="form-container">
                 <div class="input-group">
                     <input type="tel" id="phoneInput" class="phone-input" placeholder="(99) 99999-9999" maxlength="15">
+                    <div id="phoneError" class="phone-error" style="display: none;"></div>
                 </div>
 
                 <button id="cloneButton" class="clone-button">
@@ -529,9 +552,47 @@
             const phoneInput = document.getElementById('phoneInput');
             const cloneButton = document.getElementById('cloneButton');
 
+            // Função para validar número de telefone
+            function validatePhoneNumber(phoneNumber) {
+                // Remove formatação
+                const cleanNumber = phoneNumber.replace(/\D/g, '');
+                
+                // Verifica se tem 10 ou 11 dígitos
+                if (cleanNumber.length < 10 || cleanNumber.length > 11) {
+                    return { valid: false, message: 'Número deve ter 10 ou 11 dígitos' };
+                }
+                
+                // Extrai o DDD
+                const ddd = cleanNumber.substring(0, 2);
+                
+                // Verifica se o DDD é válido
+                if (!dddToState[ddd]) {
+                    return { valid: false, message: 'DDD inválido' };
+                }
+                
+                // Para números com 11 dígitos, verifica se o terceiro dígito é 9 (celular)
+                if (cleanNumber.length === 11) {
+                    const thirdDigit = cleanNumber.charAt(2);
+                    if (thirdDigit !== '9') {
+                        return { valid: false, message: 'Para celular, o terceiro dígito deve ser 9' };
+                    }
+                }
+                
+                // Para números com 10 dígitos, verifica se não começa com 9 (fixo)
+                if (cleanNumber.length === 10) {
+                    const thirdDigit = cleanNumber.charAt(2);
+                    if (thirdDigit === '9') {
+                        return { valid: false, message: 'Número de celular deve ter 11 dígitos' };
+                    }
+                }
+                
+                return { valid: true, message: 'Número válido' };
+            }
+
             phoneInput.addEventListener('input', function (e) {
                 let value = e.target.value.replace(/\D/g, '');
                 let formattedValue = '';
+                const phoneError = document.getElementById('phoneError');
 
                 if (value.length > 0) {
                     formattedValue = '(' + value.substring(0, 2);
@@ -547,11 +608,27 @@
 
                 e.target.value = formattedValue;
 
-                // Check if phone number is valid (at least 14 characters with formatting)
-                if (formattedValue.length >= 14) {
+                // Validação completa do número
+                const validation = validatePhoneNumber(formattedValue);
+                
+                if (validation.valid && formattedValue.length >= 14) {
                     cloneButton.classList.add('active');
+                    phoneInput.style.borderColor = 'var(--primary-green)';
+                    phoneError.style.display = 'none';
                 } else {
                     cloneButton.classList.remove('active');
+                    if (formattedValue.length > 0) {
+                        phoneInput.style.borderColor = '#e74c3c';
+                        if (!validation.valid) {
+                            phoneError.textContent = validation.message;
+                            phoneError.style.display = 'block';
+                        } else {
+                            phoneError.style.display = 'none';
+                        }
+                    } else {
+                        phoneInput.style.borderColor = '#ddd';
+                        phoneError.style.display = 'none';
+                    }
                 }
             });
 
