@@ -82,9 +82,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['action'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
     $api_url = 'https://api.paradisepagbr.com/api/public/v1/transactions?api_token=' . $API_TOKEN;
-    $data = json_decode(file_get_contents('php://input'), true);
+    $raw_input = file_get_contents('php://input');
+    $data = json_decode($raw_input, true);
+    
+    // Check if JSON decoding failed
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON: ' . json_last_error_msg()]);
+        exit;
+    }
+    
     $customer_data = $data['customer'] ?? [];
     $utms = $data['utms'] ?? [];
+    
+    // Validate required data structure
+    if (!is_array($customer_data)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid customer data format']);
+        exit;
+    }
     
     // Initialize variables to avoid PHP notices
     $cpf = null;
