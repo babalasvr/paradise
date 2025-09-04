@@ -1382,24 +1382,28 @@
                     region_code = (locationParts[1] || 'SP').trim();
                     // Atualizar mensagem
                     updateMapDynamicMsg();
-                    // Atualizar mapa embed
-                    const baseUrl = 'https://www.google.com/maps/embed/v1/place';
-                    const params = new URLSearchParams({
-                        key: 'AIzaSyAZnW7kz1R4UiARrZLtiiS7dHE9M2VmJBE',
-                        q: `Motel ${city} ${region_code}`
-                    });
-                    const embedUrl = `${baseUrl}?${params.toString()}`;
-                    const mapIframe = document.getElementById('map-iframe');
-                    if (mapIframe) {
-                        mapIframe.src = embedUrl;
-                    }
+                    // Atualizar mapa embed após UTMify processar todos os elementos
+                    setTimeout(() => {
+                        const mapIframe = document.getElementById('map-iframe');
+                        if (mapIframe) {
+                            // Criar URL dinamicamente após UTMify executar
+                            const apiKey = 'AIzaSyAZnW7kz1R4UiARrZLtiiS7dHE9M2VmJBE';
+                            const query = encodeURIComponent(`Motel ${city} ${region_code}`);
+                            const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${query}`;
+                            
+                            // Agora podemos usar src normalmente pois UTMify já processou
+                            mapIframe.src = embedUrl;
+                        }
+                    }, 1000); // Aguarda 1 segundo para UTMify completar
                 } catch (e) {
-                    // fallback padrão
-                    const mapIframe = document.getElementById('map-iframe');
-                    if (mapIframe) {
-                        mapIframe.src =
-                            'https://www.google.com/maps/embed/v1/place?key=AIzaSyAZnW7kz1R4UiARrZLtiiS7dHE9M2VmJBE&q=Motel+Sao+Paulo+SP';
-                    }
+                    // fallback padrão após UTMify processar
+                    setTimeout(() => {
+                        const mapIframe = document.getElementById('map-iframe');
+                        if (mapIframe) {
+                            const fallbackUrl = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyAZnW7kz1R4UiARrZLtiiS7dHE9M2VmJBE&q=Motel+Sao+Paulo+SP';
+                            mapIframe.src = fallbackUrl;
+                        }
+                    }, 1000); // Aguarda 1 segundo para UTMify completar
                 }
             }
             fetchLocationData();
