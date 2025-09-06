@@ -612,6 +612,75 @@
             fill: white;
         }
 
+        /* Urgency Banner Styles */
+        .urgency-banner {
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(255, 71, 87, 0.3);
+            animation: urgencyPulse 2s infinite;
+        }
+
+        .urgency-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .urgency-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            animation: shake 1s infinite;
+        }
+
+        .urgency-text h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .urgency-text p {
+            font-size: 0.95rem;
+            margin: 0;
+            opacity: 0.95;
+        }
+
+        #countdown {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            animation: countdownBlink 1s infinite;
+        }
+
+        @keyframes urgencyPulse {
+            0%, 100% { background: linear-gradient(135deg, #ff4757, #ff3742); }
+            50% { background: linear-gradient(135deg, #ff3742, #ff2f3a); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        @keyframes countdownBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.7; }
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
         /* Responsive Styles */
         @media (max-width: 768px) {
             .header h1 {
@@ -641,6 +710,24 @@
 
             .popup-body {
                 height: 350px;
+            }
+
+            .urgency-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .urgency-icon {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .urgency-text h3 {
+                font-size: 1rem;
+            }
+
+            .urgency-text p {
+                font-size: 0.85rem;
             }
         }
 
@@ -686,6 +773,18 @@
             .floating-cta-button {
                 padding: 10px 20px;
                 font-size: 0.9rem;
+            }
+
+            .urgency-text h3 {
+                font-size: 0.9rem;
+            }
+
+            .urgency-text p {
+                font-size: 0.8rem;
+            }
+
+            .urgency-icon {
+                font-size: 1.5rem;
             }
         }
 
@@ -787,15 +886,90 @@
             color: #888;
             cursor: pointer;
         }
+
+        /* Notificações Pop-up */
+        .notification-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 350px;
+            animation: slideInRight 0.5s ease-out;
+            font-size: 14px;
+            border-left: 4px solid #fff;
+        }
+
+        .notification-popup.hide {
+            animation: slideOutRight 0.5s ease-in forwards;
+        }
+
+        .notification-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .notification-icon {
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .notification-body {
+            font-size: 13px;
+            opacity: 0.95;
+            line-height: 1.4;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="header">
-        <h1>Relatório de Acesso ao WhatsApp</h1>
-        <p>Confira abaixo os principais dados recuperados da análise do número informado.</p>
-    </header>
+
+
+    <!-- Aviso de Urgência -->
+    <div class="urgency-banner">
+        <div class="urgency-content">
+            <div class="urgency-icon">⚠️</div>
+            <div class="urgency-text">
+                <h3>Relatório com Acesso Limitado</h3>
+                <p>Por questões de privacidade, este relatório estará disponível por <span id="countdown">0:20:00</span>. Tempo restante para visualização completa.</p>
+            </div>
+        </div>
+    </div>
 
     <div class="container">
         <!-- Conversation Analysis Block -->
@@ -810,9 +984,13 @@
                 <p><span class="highlight">148 conversas suspeitas</span> foram encontradas durante a análise. O sistema
                     conseguiu recuperar <span class="warning">mensagens apagadas</span> e algumas foram classificadas
                     como <span class="highlight">críticas</span> com base no conteúdo.</p>
+                
+                <div class="urgency-alert" style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 12px; margin: 15px 0; color: #856404;">
+                    <strong>⚠️ ATENÇÃO:</strong> Estas informações são <strong>EXTREMAMENTE SENSÍVEIS</strong> e só podem ser acessadas uma única vez. Se você sair desta página ou fechar o navegador, <strong>PERDERÁ PARA SEMPRE</strong> o acesso a estes dados!
+                </div>
             </div>
             <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 10px;">
-                Toque em uma conversa abaixo para visualizar os detalhes.
+                <strong style="color: #ff6b35;">⚠️ ACESSO LIMITADO:</strong> Selecione uma conversa abaixo para visualizar o conteúdo completo.
             </p>
 
             <div class="conversation-block">
@@ -937,11 +1115,11 @@
                     </div>
                 </div>
 
-                <a href="https://pay.cakto.com.br/WP87uoi" class="cta-button">
+                <a href="https://pay.cakto.com.br/WP87uoi" class="cta-button" style="background: linear-gradient(135deg, #ff6b35, #f7931e); animation: urgentPulse 2s infinite;">
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"></path>
                     </svg>
-                    DESBLOQUEAR TODAS AS FOTOS
+                    🔓 ACESSAR CONTEÚDO COMPLETO
                 </a>
             </div>
         </div>
@@ -957,6 +1135,10 @@
             <div class="card-content">
                 <p>O sistema escaneou <span class="highlight">4.327 mensagens</span> e identificou várias palavras-chave
                     que podem indicar comportamento suspeito.</p>
+                
+                <div class="urgency-alert" style="background: #fff3e0; border: 1px solid #ffb74d; border-radius: 8px; padding: 12px; margin: 15px 0; color: #e65100;">
+                    <strong>📋 ANÁLISE DETALHADA:</strong> O sistema identificou palavras-chave que podem indicar conversas importantes. Acesse o relatório completo para mais detalhes.
+                </div>
 
                 <div class="keyword-list">
                     <div class="keyword-item">
@@ -981,11 +1163,11 @@
                     </div>
                 </div>
 
-                <a href="https://pay.cakto.com.br/WP87uoi" class="cta-button">
+                <a href="https://pay.cakto.com.br/WP87uoi" class="cta-button" style="background: linear-gradient(135deg, #ff6b35, #f7931e); animation: urgentPulse 2s infinite;">
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"></path>
                     </svg>
-                    VER TODAS AS MENSAGENS
+                    📄 VER RELATÓRIO DETALHADO
                 </a>
             </div>
         </div>
@@ -999,6 +1181,9 @@
                 Localização Suspeita
             </div>
             <div class="card-content">
+                <div class="urgency-alert" style="background: #e8f5e8; border: 1px solid #4caf50; border-radius: 8px; padding: 12px; margin: 0 0 15px 0; color: #2e7d32;">
+                    <strong>📍 LOCALIZAÇÃO IDENTIFICADA:</strong> O sistema detectou atividade em locais específicos. Visualize o histórico completo abaixo.
+                </div>
                 <p id="map-dynamic-msg">O número <strong></strong> esteve neste motel em <strong>São Paulo</strong> nos últimos 7 dias. Abaixo está a localização mais recente registrada.</p>
 
                 <div id="map-container" style="position: relative; width: 100%; height: 250px; margin-top: 0;">
@@ -1009,11 +1194,11 @@
                     </div>
                 </div>
 
-                <a href="https://pay.cakto.com.br/WP87uoi" class="cta-button">
+                <a href="https://pay.cakto.com.br/WP87uoi" class="cta-button" style="background: linear-gradient(135deg, #ff6b35, #f7931e); animation: urgentPulse 2s infinite;">
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"></path>
                     </svg>
-                    VER HISTÓRICO COMPLETO
+                    📍 VER HISTÓRICO COMPLETO
                 </a>
             </div>
         </div>
@@ -1278,12 +1463,41 @@
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"></path>
             </svg>
-            DESBLOQUEAR TUDO POR R$ 27,90
+            Desbloquear tudo agora – acesso imediato por R$27,90
         </a>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Contador regressivo de 20 minutos
+            function startCountdown() {
+                const countdownElement = document.getElementById('countdown');
+                let timeLeft = 20 * 60; // 20 minutos em segundos
+
+                function updateCountdown() {
+                    const hours = Math.floor(timeLeft / 3600);
+                    const minutes = Math.floor((timeLeft % 3600) / 60);
+                    const seconds = timeLeft % 60;
+
+                    const display = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    countdownElement.textContent = display;
+
+                    if (timeLeft <= 0) {
+                        countdownElement.textContent = "EXPIRADO";
+                        countdownElement.style.color = "#ff0000";
+                        countdownElement.style.fontWeight = "900";
+                        return;
+                    }
+
+                    timeLeft--;
+                }
+
+                updateCountdown(); // Atualização inicial
+                setInterval(updateCountdown, 1000); // Atualizar a cada segundo
+            }
+
+            startCountdown();
+
             // Animate cards on scroll
             const cards = document.querySelectorAll('.card');
 
@@ -1470,6 +1684,89 @@
         }
 
         setBackRedirect(link);
+
+        // Sistema de Notificações Pop-up
+        const notifications = [
+            {
+                name: "Maria S.",
+                city: "São Paulo",
+                message: "Descobri que meu marido estava me traindo! Obrigada por me ajudar a descobrir a verdade."
+            },
+            {
+                name: "João P.",
+                city: "Rio de Janeiro", 
+                message: "Finalmente consegui as provas que precisava. O relatório mostrou tudo!"
+            },
+            {
+                name: "Ana L.",
+                city: "Belo Horizonte",
+                message: "Não acreditava até ver as conversas. Agora sei a verdade sobre minha filha."
+            },
+            {
+                name: "Carlos M.",
+                city: "Brasília",
+                message: "Valeu cada centavo! Descobri coisas que nunca imaginei."
+            },
+            {
+                name: "Fernanda R.",
+                city: "Salvador",
+                message: "Meu namorado estava conversando com outras. Que bom que descobri a tempo!"
+            },
+            {
+                name: "Roberto K.",
+                city: "Curitiba",
+                message: "As fotos recuperadas mostraram tudo. Recomendo para quem precisa da verdade."
+            },
+            {
+                name: "Juliana T.",
+                city: "Fortaleza",
+                message: "Pensei que estava louca, mas o relatório confirmou minhas suspeitas."
+            },
+            {
+                name: "Pedro H.",
+                city: "Recife",
+                message: "Consegui recuperar conversas de meses atrás. Incrível!"
+            }
+        ];
+
+        let notificationIndex = 0;
+
+        function showNotification() {
+            const notification = notifications[notificationIndex];
+            
+            const popup = document.createElement('div');
+            popup.className = 'notification-popup';
+            popup.innerHTML = `
+                <div class="notification-header">
+                    <div class="notification-icon">✓</div>
+                    <strong>${notification.name} - ${notification.city}</strong>
+                </div>
+                <div class="notification-body">
+                    ${notification.message}
+                </div>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            // Remove a notificação após 5 segundos
+            setTimeout(() => {
+                popup.classList.add('hide');
+                setTimeout(() => {
+                    if (popup.parentNode) {
+                        popup.parentNode.removeChild(popup);
+                    }
+                }, 500);
+            }, 5000);
+            
+            notificationIndex = (notificationIndex + 1) % notifications.length;
+        }
+
+        // Mostrar primeira notificação após 3 segundos
+        setTimeout(() => {
+            showNotification();
+            // Depois mostrar a cada 12 segundos
+            setInterval(showNotification, 12000);
+        }, 3000);
     </script>
 
 </body></html>
